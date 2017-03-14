@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 (eval-and-compile
-  
+
   (defn parse-html [code]
     (if (coll? code)
       (do
@@ -60,4 +60,5 @@
 
 (defreader @ [code] (parse-html code))
 
-(defmacro html [&rest code] (.join "" (map parse-html code)))
+(defmacro html* [&rest code]
+  (.join "" (map parse-html code)))
