@@ -6,23 +6,26 @@
     (if (coll? code)
       (do
         (setv tag (catch-tag (first code)))
-        (setv attr (get-attributes (list (drop 1 code))))
-        (setv content (get-content (list (drop 1 code))))
-        (+ (tag-start tag attr)
-           (tag-content content)
+        (+ ; can have attributes, omit end tag, closing /?
+           (tag-start tag (get-attributes (list (drop 1 code))))
+           ; TODO: can have content?
+           (tag-content (get-content (list (drop 1 code))))
+           ; has endtag
            (tag-end tag)))
       code))
    
   (defn catch-tag [code]
     (try
       ; catch "'name' is not defined" errors
-      (str (eval 'code))
-      (except (e Exception))))
+      ;(str (eval 'code))
+      (eval 'code)
+      (except (e Exception)
+        (str (eval 'code)))))
    
    (defn concat-attributes [attr]
      (if-not (empty? attr)
         (+ " " (.join " " 
-          (list-comp (+ key "=" "\"" value "\"") 
+          (list-comp (+ (str (eval 'key)) "=" "\"" (str (eval value)) "\"") 
                      [[key value] attr])))
         ""))
    
