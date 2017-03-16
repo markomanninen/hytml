@@ -12,9 +12,17 @@
 ;         (table (tr (for-each [i [1 2 3]] `(td ~i))))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(import (hytml.specs (specs)))
+
 (eval-and-compile
 
-  (defn func? [code] False)
+  (defn tag? [tag] (in (keyword tag) specs))
+
+  (defn tag-specs [tag] (get specs (keyword tag)))
+
+  (defn omit? [tag] (get (tag-specs tag) :omit))
+
+  (defn forbidden? [tag] (get (tag-specs tag) :forbidden))
   
   ; main parser loop
   ; get-content function calls back here so that recursive
@@ -23,33 +31,34 @@
     (if (coll? code)
       (do
         (setv tag (catch-tag (first code)))
-        ; hy translates - to _
-        (if ; comment tag <!-- -->, can be written as plain text also, so this might be
-            ; a redundant block
+        ; note: hy transforms - to _
+        (if ; comment tag <!-- -->
+            ; can be written as a plain text also
             (= tag "!__")
             (+ "<!--" (tag-content (get-content (list (drop 1 code)))) "-->")
             ; doctype codeblock: <!DOCTYPE html> -> maybe just (doctype html)?
             (= tag "!DOCTYPE")
             (+ "<!DOCTYPE " (tag-content (get-content (list (drop 1 code)))) ">")
-            ; unquote code, means one can change to normal lisp evaluation
-            ; from html mode. and perhaps then back to html after expression
-            ; ~(setv x 1)
-            (= tag "unquote")
-            (eval (second code))
-            ; used to concat lists. uses parse-html function to recursively evaluate content
+            ; unquoting code. this means that one can change from html* macro mode
+            ; to the normal lisp evaluation mode
+            (= tag "unquote") (str (eval (second code)))
+            ; ~@ is used to concat lists. parse-html function is called recursively 
+            ; to evaluate the content
             (= tag "unquote_splice") 
             (.join "" (map parse-html (eval (second code))))
-            ; special for loop. redundant it might be if ~@ list compression is used...
-            (= tag "for_each")
-            (eval code)
-            ; normal tag, attribute, content processing
-            (do (+ 
-              ; TODO: which attributes are accepted, some tags may have short form for closing <tag/>
-              (tag-start tag (get-attributes (list (drop 1 code))))
-              ; TODO: not all tags can have content
-              (tag-content (get-content (list (drop 1 code))))
-              ; TODO: not all tags have endtag?
-              (tag-end tag)))))
+            ; special for-each loop. ~@ list compression could be used in place of this
+            ; but for-each syntax may please more. for-each doesn't require using 
+            ; unquote splice combo syntax
+            (= tag "for_each") (eval code)
+            ; normal tag, attribute, and content processing
+            (do
+              (setv content-code (list (drop 1 code)))
+              (setv content (get-content content-code))
+              ; empty content will give a short tag
+              (+ (tag-start tag (get-attributes content-code) (empty? content))
+                 (if-not (empty? content) (tag-content content) "")
+                 (tag-end tag)))))
+      ; return code as a string because html is practically just a stream of text
       (str code)))
   
   ; create a tag from the first item of the expression
@@ -80,7 +89,6 @@
         ""))
 
   (defn concat-content [content]
-    ;(.join "" (map (fn [x] (str (eval x))) content)))
     (.join "" (map str content)))
   
   (defn tag-content [content]
@@ -88,8 +96,11 @@
             (concat-content content)
              ""))
  
-  (defn tag-start [name attr]
-    (+ "<" name (concat-attributes attr) ">"))
+  ;(defn tag-start [name attr]
+  ;  (+ "<" name (concat-attributes attr) ">"))
+
+  (defn tag-start [name attr &optional [short False] [omit False]]
+    (+ "<" name (concat-attributes attr) (if (and short (not omit)) "\\>" ">")))
 
   (defn tag-end [name] (+ "</" name ">"))
  
