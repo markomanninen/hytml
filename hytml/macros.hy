@@ -24,15 +24,27 @@
       (do
         (setv tag (catch-tag (first code)))
         ; hy translates - to _
-        (if (= tag "!__")
+        (if ; comment tag <!-- -->, can be written as plain text also, so this might be
+            ; a redundant block
+            (= tag "!__")
             (+ "<!--" (tag-content (get-content (list (drop 1 code)))) "-->")
+            ; doctype codeblock: <!DOCTYPE html> -> maybe just (doctype html)?
             (= tag "!DOCTYPE")
             (+ "<!DOCTYPE " (tag-content (get-content (list (drop 1 code)))) ">")
+            ; unquote code, means one can change to normal lisp evaluation
+            ; from html mode. and perhaps then back to html after expression
+            ; ~(setv x 1)
             (= tag "unquote")
             (eval (second code))
+            ; used to concat lists. uses parse-html function to recursively evaluate content
+            (= tag "unquote_splice") 
+            (.join "" (map parse-html (eval (second code))))
+            ; special for loop. redundant it might be if ~@ list compression is used...
             (= tag "for_each")
             (eval code)
-            (do (+ ; TODO: which attributes are accepted, some tags may have short form for closing <tag/>
+            ; normal tag, attribute, content processing
+            (do (+ 
+              ; TODO: which attributes are accepted, some tags may have short form for closing <tag/>
               (tag-start tag (get-attributes (list (drop 1 code))))
               ; TODO: not all tags can have content
               (tag-content (get-content (list (drop 1 code))))
