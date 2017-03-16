@@ -7,7 +7,9 @@
 ;    (head (title "Page title"))
 ;    (body
 ;      (!-- " Body part starts from here... ")
-;      (div :class "main-container" ~(.upper "Page content")))))
+;      (div :class "main-container"
+;         (h1 ~(.upper "Page content"))
+;         (table (tr (for-each [i [1 2 3]] `(td ~i))))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (eval-and-compile
@@ -28,6 +30,8 @@
             (+ "<!DOCTYPE " (tag-content (get-content (list (drop 1 code)))) ">")
             (= tag "unquote")
             (eval (second code))
+            (= tag "for_each")
+            (eval code)
             (do (+ ; TODO: which attributes are accepted, some tags may have short form for closing <tag/>
               (tag-start tag (get-attributes (list (drop 1 code))))
               ; TODO: not all tags can have content
@@ -129,7 +133,7 @@
 ; strict set of html tag generator for html5
 (defmacro html5 [&rest code] "Not implemented.")
 
-(defmacro for-html [args code]
+(defmacro for-each [args code]
   `(eval `(html* ~@(list-comp ~code ~args))))
 
 ; a small blemish is that ` needs to be prefixed for ("td" ~i)
@@ -137,7 +141,7 @@
 ; for ~i it is acceptable because we could want to pass i as a string
 ; or ~i as an evaluated variable, which is in this case
 ; maybe it is same with quasiquote too...
-;(for-html* [i (range 3)] `(td ~i))
-(defmacro for-html* [args code]
+;(for-each* [i (range 3)] `(td ~i))
+(defmacro for-each* [args code]
   ; `(for-html ~args `~code) -> not working, how to pass argument as quoted
-  `(for-html ~args ~code))
+  `(for-each ~args ~code))
