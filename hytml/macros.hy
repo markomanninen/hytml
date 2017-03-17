@@ -151,7 +151,7 @@
             (setv content (get-content content-code))
             ; empty content will give a short tag
             (+ (tag-start tag (get-attributes content-code) (empty? content) (omit? tag))
-               (if-not (or (forbidden? tag) (empty? content))
+               (if (and (not (forbidden? tag)) (not (empty? content)))
                  (+ (tag-content content) (tag-end tag))
                   "")))
           (raise (Exception (% "Tag '%s' not meeting html4 specs" tag))))))
@@ -192,14 +192,14 @@
              ""))
 
   (defn tag-start [name attr &optional [short False] [omit False]]
-    (+ "<" name (concat-attributes attr) (if (and short (not omit)) "\>" ">")))
+    (+ "<" name (concat-attributes attr) (if (and short (not omit)) "/>" ">")))
 
   (defn tag-end [name] (+ "</" name ">")))
 
-; shorthand for parsing tags. note that
-; html* will accepot multiple expressions, not just
-; an expression with single root node
-(defreader @ [code] (parse-html code))
+; unicode Square Ml U+3396  is a shorthand for parsing tags. note that
+; html* and similar macros will accept multiple expressions, not just
+; an expression with a single root node
+(defreader ㎖ [code] (parse-html code))
 
 ; html* is xml* because it will accept any tags, 
 ; not just html4 or html5 tags
@@ -209,6 +209,14 @@
 ; strict set of html tag generator for html4
 (defmacro html4 [&rest code]
   (.join "" (map parse-html4 code)))
+
+(defmacro xml* [&rest code]
+  (.join "" (map parse-html code)))
+
+; xhtml is almost same as html4 and html5 but tags must be correctly closed
+; for example <b> must be <b/> in xhtml
+(defmacro xhtml* [&rest code]
+  (.join "" (map parse-html code)))
 
 ; strict set of html tag generator for html5
 (defmacro html5 [&rest code] "Not implemented.")
