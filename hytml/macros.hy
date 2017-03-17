@@ -150,9 +150,9 @@
             (setv content-code (list (drop 1 code)))
             (setv content (get-content content-code))
             ; empty content will give a short tag
-            (+ (tag-start tag (get-attributes content-code) (empty? content))
-               (if-not (empty? content)
-                 (+ (tag-content content)(tag-end tag))
+            (+ (tag-start tag (get-attributes content-code) (empty? content) (omit? tag))
+               (if-not (or (forbidden? tag) (empty? content))
+                 (+ (tag-content content) (tag-end tag))
                   "")))
           (raise (Exception (% "Tag '%s' not meeting html4 specs" tag))))))
   
