@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 
-(setv specs {
+;https://www.w3schools.com/TAGs/default.asp
+;http://www.w3.org/TR/html401/index/elements.html
+;http://www.w3.org/TR/html5/syntax.html#optional-tags
+
+(setv specs4 {
   :a {:name "Anchor" :forbidden False :omit False}
   :abbr {:name "Abbreviation" :forbidden False :omit False}
   :acronym {:name "Acronym" :forbidden False :omit False}
@@ -130,3 +134,8 @@
 ; next tags are not supported by html5 althought they are at html4
 (setv specs5! (, 
   :tt :strike :noframes :frameset :frame :font :dir :center :big :basefont :applet :acronym))
+
+; add html4 specs (except specs5!) to html5
+(for [[key set] (.items specs4)]
+	(if-not (in key specs5!)
+		    (assoc specs5 key set)))
