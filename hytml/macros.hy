@@ -179,8 +179,10 @@
   (defn concat-attributes [attr]
     (if-not (empty? attr)
        (+ " " (.join " " 
-         (list-comp (+ (str (eval 'key)) "=" "\"" (str (eval value)) "\"") 
-                    [[key value] attr])))
+         (list-comp 
+           (% "%s=\"%s\"" (, (str (eval 'key)) 
+                             (if-not (empty? value) (str (eval value)) ""))) 
+           [[key value] attr])))
         ""))
 
   (defn concat-content [content]
