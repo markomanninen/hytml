@@ -13,7 +13,7 @@
 ;           ~@(for-list [i [1 2 3]] `(li ~i)))))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(import (hytml.specs (specs4 specs5)))
+(import (hytml.specs (specs4 specs5 specs)))
 
 (eval-and-compile
   
@@ -24,7 +24,7 @@
     `(defn ~name [code]
       (setv items [] key None)
       (for [item code]
-           (do 
+           (do
              ~if-code
              (if (keyword? item)
                  (setv key item)
