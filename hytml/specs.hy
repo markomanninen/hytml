@@ -99,7 +99,10 @@
 
 ; add key as a tag name
 (for [[key set] (.items specs4)]
-  (assoc set :name (.join "" (drop 2 key))))
+  (do
+     (assoc set :html4 True)
+     (assoc set :html5 True)
+     (assoc set :name (.join "" (drop 2 key)))))
 
 ; TODO: forbidden and omit flags!
 (setv specs5 {
@@ -136,6 +139,13 @@
   :video {:title "Defines a video or movie" :forbidden False :omit False}
   :wbr {:title "Defines a possible line-break" :forbidden False :omit False}})
 
+; add key as a tag name
+(for [[key set] (.items specs5)]
+  (do
+     (assoc set :html4 False)
+     (assoc set :html5 True)
+     (assoc set :name (.join "" (drop 2 key)))))
+
 ; next tags are not supported by html5 althought they are at html4
 (setv specs5! (, 
   :tt :strike :noframes :frameset :frame :font :dir :center :big :basefont :applet :acronym))
@@ -143,34 +153,21 @@
 ; add html4 specs (except specs5!) to html5
 (for [[key set] (.items specs4)]
   (if-not (in key specs5!)
-          (do
-             (assoc specs5 key set)
-             ; add key as a tag name
-             (assoc set :name (.join "" (drop 2 key))))))
+          (assoc specs5 key set)
+          ; change html5 flag to false if tag is in specs5! specs
+          (assoc set :html5 False)))
 
 ; generate both html4 and html5 specs table
 (setv specs {})
 
-; first add html4 true for all html4 specs
+; first add html4 specs
 (for [[key set] (.items specs4)]
-  (do
-    (assoc specs key set)
-    (assoc (get specs key) :html4 True)
-    ; initially all is html5 false, but this changes
-    ; for most of the tags on the next iteration
-    (assoc (get specs key) :html5 False)))
+  (assoc specs key set))
 
-; process html5 specs
+; then add html5 specs
 (for [[key set] (.items specs5)]
-  (do
-    ; add a new key only if it not yet added on the previous html4 part
-    (if-not (in key specs)
-            (do 
-              (assoc specs key set)
-              ; this tag is was not in html4 specs, so flag html4 false
-              (assoc (get specs key) :html4 False)))
-    ; also those html5 flags that were false on html4 must be turned true
-    (assoc (get specs key) :html5 True)))
+  (if-not (in key specs)
+          (assoc specs key set)))
 
 ; cast dict to ordered dict
 (import [collections [OrderedDict]])

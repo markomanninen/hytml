@@ -4,10 +4,10 @@
  * Copyright: Marko Manninen, 04/2016 (https://www.github.com/markomanninen)
  */
 
-.rendered_html table,
-.rendered_html tr,
-.rendered_html th,
-.rendered_html td {
+.rendered_html table.data,
+.rendered_html table.data tr,
+.rendered_html table.data th,
+.rendered_html table.data td {
     border: 0
 }
 
@@ -56,11 +56,11 @@ table.data thead th {
 }
 
 table.data tbody {}
-table.data tbody tr:hover td {
+table.data tbody tr:not(.html5):hover td {
 	background: #ffe;
     color: black;
 }
-table.data tbody tr td:hover {
+table.data tbody tr:not(.html5) td:not(.html5):hover {
 	background: #f5f6d2;
 }
 table.data tbody tr td:last-child {
@@ -90,6 +90,17 @@ table.data tr.failed td {background-color: red; color: white}
 table.data tr.error td {background-color: lightpink}
 table.data tbody.failures {}
 table.data tbody.errors {}
+
+table.data .html4 {
+
+}
+
+table.data tr td.html5,
+table.data tr:hover td.html5,
+table.data tr td.html5:hover {
+	height: 50px;
+	background: 15px 3px #fff no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAsVBMVEX////kTSbxZSnr6+sAAADkVC7nUybzfkzHx8flZkb98+7lakvq3tuzs7M2Nja6urpRUVGUlJTzglFnZ2f0jWHtiG/rWif1vK58fHzpycH87Ojvln/nl4LujXSqqqrxajDlWTXnpZTrfGDqd1jyqZb3zMH52dHe3t4iIiI8PDwUFBTnmob4uZ/5x7L849j2oHz71cXouq7p0sz3q4r0taXqz8j40sji4uLycjvycDj2o4Ba0xTVAAAB9ElEQVRIibXU63KqMBQF4I0E5VKt9kA9At4AL/X0UOm9ff8H697RICS79FfXjM4QPpyQLAOgci1GMBSjhaBMxnjlCjEciwmw0bmYjLq5OAh8xP4r/tgwlk91c0EckAPykTjsO/l+N2nwxd3ijvhhvx9+P/cLt0FyzILhtuviZwfwRl8715ZfOxdj8/P5rbw6P+S1xUvrh5QtHuu3+83gddyejc57zaDXJr/q5iuNB13csgKNZ2Qcr86gzpJ4pvE58cCuc7kzID7XeEp8xfEP4qnGCzljjvd6t5ZVaHwq+RXCKxlfpZR8qvGN5C/IM2NlkG80vpWoQj7n+Fbjcc1Tg/eNDpxbsEa+5riuTy1IbfWu9at+ch0A8IjPzYV8oGX3DC4XJDN5yHUAIGq3oB6XHYgMnsiOBSo3FBp/J54YvDAL/E7jbAdUC6rZbOYpTr/usx1QLXhULSAe4nDJdkC1YIY8UvwBh49sB5otqHKH+DI84vB/vgONFuC+VunT0Zej95L7JneI/9PX/YnvwLkF2WObxyHfAYD8tOBeUr2duH/8HJyOjZzhUb1FTrZ+Ke/DZX3KmB04t4A7lrgO6C24/PP6XAcAnk1OlPLM8DhtnpO9W2WtIGV2ST4xjbSTeBVNv7HnbItc2bwwu8LE3ySel2yYnYcvzuElaKKAbG4AAAAASUVORK5CYII=');
+}
 
 div.output_scroll {height: inherit;}
 
