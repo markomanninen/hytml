@@ -92,4 +92,15 @@ table.data tbody.failures {}
 table.data tbody.errors {}
 
 div.output_scroll {height: inherit;}
+
+table#data { margin: 1em auto; border-collapse: collapse; border: 0} 
+table#data caption { font-size: 1.2em; text-align: center; padding: 3px} 
+table#data th, table#data td { padding: .25em; border: 1px solid #000; font-family: sans-serif; color: white} 
+table#data th { color: #004900; font-weight: bold; text-align: left; } 
+table#data thead th { border-bottom: 3px double #000; background-color: #ddd; text-align: center; } 
+table#data tfoot td { border-top: 3px double #000; color: #fff; font-style: italic; font-size: .8em; text-align: center; background-color: brown} 
+table#data tbody th { color: #000; }
+table#data #tbody3 {font-weight: bold;font-size: 1.5em;}
+table#data #tbody4 {font-style: italic;}
+
 </style>
