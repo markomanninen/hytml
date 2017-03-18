@@ -97,6 +97,11 @@
   :ul {:name "Unordered list" :forbidden False :omit False}
   :var {:name "Variable" :forbidden False :omit False}})
 
+; add key as acronym / tag name
+(for [[key set] (.items specs4)]
+  (assoc set :acronym (.join "" (drop 2 key))))
+
+; TODO: forbidden and omit flags!
 (setv specs5 {
   :article {:name "Defines an article" :forbidden False :omit False}
   :aside {:name "Defines content aside from the page content" :forbidden False :omit False}
@@ -137,5 +142,8 @@
 
 ; add html4 specs (except specs5!) to html5
 (for [[key set] (.items specs4)]
-	(if-not (in key specs5!)
-		    (assoc specs5 key set)))
+  (if-not (in key specs5!)
+          (do
+             (assoc specs5 key set)
+             ; add key as acronym / tag name
+             (assoc set :acronym (.join "" (drop 2 key))))))
